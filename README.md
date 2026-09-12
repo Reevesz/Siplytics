@@ -11,6 +11,8 @@
 
 ---
 
+## YOUTUBE PREVIEW :> https://youtu.be/181SfoNDlgE
+
 ## Project Description
 
 Siplytics is an advanced AI-powered tea analysis platform designed to solve problems that humanity never had. Using computer vision and completely unnecessary analytics, Siplytics analyzes your cup of tea and provides highly questionable insights into its quality, concentration, froth, color, and overall tea superiority.
