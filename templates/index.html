@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brewlytics — Tea Analytics</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #080b12;
+            color: #e8edf7;
+            min-height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 245px;
+            background: #0d111a;
+            border-right: 1px solid #202838;
+            padding: 28px 18px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 45px;
+            color: #ffffff;
+        }
+
+        .logo span {
+            color: #00e5ff;
+        }
+
+        .section-label {
+            color: #626d82;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            margin: 25px 12px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 12px;
+            border-radius: 8px;
+            color: #8d98aa;
+            font-size: 13px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #151c2a;
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            border-left: 3px solid #00e5ff;
+            box-shadow: inset 15px 0 25px rgba(0, 229, 255, 0.04);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .system-status {
+            position: absolute;
+            bottom: 25px;
+            left: 18px;
+            right: 18px;
+            padding: 13px;
+            border: 1px solid #202838;
+            border-radius: 8px;
+            background: #101621;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #00ff9d;
+            border-radius: 50%;
+            margin-right: 7px;
+            box-shadow: 0 0 10px #00ff9d;
+        }
+
+        .system-status small {
+            color: #7e899b;
+            font-size: 10px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 245px;
+            width: calc(100% - 245px);
+            padding: 30px 38px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .breadcrumb {
+            color: #667187;
+            font-size: 12px;
+        }
+
+        .breadcrumb strong {
+            color: #dce4f2;
+            font-weight: 500;
+        }
+
+        .timestamp {
+            color: #657187;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 7px;
+            letter-spacing: -0.8px;
+        }
+
+        .page-subtitle {
+            color: #758196;
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        /* UPLOAD */
+
+        .upload-panel {
+            border: 1px dashed #33445b;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 229, 255, 0.035),
+                rgba(145, 70, 255, 0.025)
+            );
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .upload-panel:hover {
+            border-color: #00e5ff;
+        }
+
+        .upload-icon {
+            font-size: 34px;
+            color: #00e5ff;
+            margin-bottom: 14px;
+            text-shadow: 0 0 18px rgba(0, 229, 255, 0.5);
+        }
+
+        .upload-panel h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .upload-panel p {
+            color: #707d91;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .upload-button {
+            display: inline-block;
+            background: #00e5ff;
+            color: #031017;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.18);
+            transition: 0.2s;
+        }
+
+        .upload-button:hover {
+            background: #62efff;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.35);
+        }
+
+        #galleryInput {
+            display: none;
+        }
+
+        #fileName {
+            margin-top: 14px;
+            color: #00e5ff;
+            font-size: 11px;
+        }
+
+        /* KPI CARDS */
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .kpi-card {
+            background: #101620;
+            border: 1px solid #202a3b;
+            border-radius: 10px;
+            padding: 21px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::after {
+            content: "";
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            right: -35px;
+            bottom: -35px;
+            filter: blur(20px);
+            opacity: 0.12;
+        }
+
+        .kpi-card:nth-child(1)::after {
+            background: #00e5ff;
+        }
+
+        .kpi-card:nth-child(2)::after {
+            background: #9d4edd;
+        }
+
+        .kpi-card:nth-child(3)::after {
+            background: #00ff9d;
+        }
+
+        .kpi-card:nth-child(4)::after {
+            background: #ff9f43;
+        }
+
+        .kpi-label {
+            color: #778398;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 750;
+            margin-bottom: 8px;
+        }
+
+        .kpi-meta {
+            color: #657187;
+            font-size: 10px;
+        }
+
+        .cyan {
+            color: #00e5ff;
+        }
+
+        .purple {
+            color: #b56cff;
+        }
+
+        .green {
+            color: #00ff9d;
+        }
+
+        .orange {
+            color: #ffad5c;
+        }
+
+        /* GRID */
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .panel {
+            background: #101620;
+            border: 1px solid #202a3b;
+            border-radius: 10px;
+            padding: 22px;
+            min-width: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 650;
+            color: #dce5f3;
+        }
+
+        .panel-tag {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #66748a;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 245px;
+        }
+
+        /* COLOR METRICS */
+
+        .color-analysis {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .color-wheel {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ffb000,
+                #8d4b19,
+                #4a210f,
+                #c47a28,
+                #ffb000
+            );
+            box-shadow:
+                0 0 25px rgba(255, 160, 40, 0.15),
+                inset 0 0 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .color-wheel::after {
+            content: "";
+            position: absolute;
+            inset: 25px;
+            border-radius: 50%;
+            background: #101620;
+            border: 1px solid #29364a;
+        }
+
+        .color-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .color-center strong {
+            font-size: 20px;
+            color: #ffad5c;
+        }
+
+        .color-center span {
+            color: #7c899d;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .metric-row {
+            margin-bottom: 18px;
+        }
+
+        .metric-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .metric-top span:first-child {
+            color: #8793a6;
+        }
+
+        .metric-top span:last-child {
+            color: #e7edf7;
+            font-weight: 600;
+        }
+
+        .bar {
+            height: 5px;
+            background: #202b3b;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: inherit;
+        }
+
+        .bar-cyan {
+            background: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+        }
+
+        .bar-purple {
+            background: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+
+        .bar-green {
+            background: #00ff9d;
+            box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+        }
+
+        .bar-orange {
+            background: #ffad5c;
+            box-shadow: 0 0 10px rgba(255, 173, 92, 0.5);
+        }
+
+        /* BUBBLE PANEL */
+
+        .bubble-stat {
+            text-align: center;
+            padding: 10px 0 20px;
+        }
+
+        .bubble-number {
+            font-size: 55px;
+            font-weight: 800;
+            line-height: 1;
+            color: #b56cff;
+            text-shadow: 0 0 25px rgba(181, 108, 255, 0.35);
+        }
+
+        .bubble-caption {
+            color: #768399;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .rating-pill {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            background: rgba(181, 108, 255, 0.1);
+            border: 1px solid rgba(181, 108, 255, 0.3);
+            color: #c58aff;
+        }
+
+        /* IMAGE */
+
+        .image-panel {
+            margin-bottom: 18px;
+        }
+
+        .processed-image {
+            width: 100%;
+            max-height: 380px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #29364a;
+            background: #080b12;
+        }
+
+        .image-placeholder {
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #2b374a;
+            border-radius: 8px;
+            color: #59667a;
+            font-size: 12px;
+        }
+
+        /* TABLE */
+
+        .table-panel {
+            margin-bottom: 30px;
+        }
+
+        .color-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .color-table th {
+            text-align: left;
+            color: #69768b;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            padding: 12px;
+            border-bottom: 1px solid #222d3e;
+        }
+
+        .color-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #1b2534;
+            font-size: 11px;
+            color: #aab5c5;
+        }
+
+        .color-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .swatch {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            vertical-align: middle;
+            margin-right: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .footer {
+            text-align: center;
+            color: #424e61;
+            font-size: 10px;
+            padding: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .topbar {
+                margin-bottom: 25px;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .kpi-card {
+                padding: 16px;
+            }
+
+            .kpi-value {
+                font-size: 21px;
+            }
+
+            .color-analysis {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+        }
+
+.verdict-card {
+    padding: 20px;
+    margin-top: 30px;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.verdict-card.excellent {
+    background: linear-gradient(135deg, #183d2b, #2e8b57);
+}
+
+.verdict-card.good {
+    background: linear-gradient(135deg, #31572c, #7cb342);
+}
+
+.verdict-card.average {
+    background: linear-gradient(135deg, #7f6000, #c9a227);
+}
+
+.verdict-card.bad {
+    background: linear-gradient(135deg, #4b1111, #b22222);
+}
+
+.verdict-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.verdict-card h2 {
+    font-size: 28px;
+    margin: 10px 0;
+}
+
+.verdict-card p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.verdict-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    font-size: 13px;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="logo">brew<span>lytics</span></div>
+
+        <div class="section-label">Workspace</div>
+
+        <div class="nav-item active">
+            <span class="nav-icon">▦</span>
+            Dashboard
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">◈</span>
+            Tea Analysis
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">◌</span>
+            Bubble Metrics
+        </div>
+
+        <div class="section-label">System</div>
+
+        <div class="nav-item">
+            <span class="nav-icon">⚙</span>
+            Configuration
+        </div>
+
+        <div class="nav-item">
+            <span class="nav-icon">?</span>
+            Documentation
+        </div>
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+            <small>Analysis engine online</small>
+        </div>
+    </aside>
+
+
+    <main class="main">
+
+        <div class="topbar">
+            <div class="breadcrumb">
+                Brewlytics / <strong>Tea Analysis Dashboard</strong>
+            </div>
+
+            <div class="timestamp">
+                ANALYTICS ENGINE v1.0
+            </div>
+        </div>
+
+        <h1 class="page-title">Tea Analysis Overview</h1>
+
+        <p class="page-subtitle">
+            Upload a tea image to extract colorimetric and surface characteristics.
+        </p>
+
+
+        <!-- UPLOAD ONLY -->
+
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <div class="upload-panel">
+
+                <div class="upload-icon">⬆</div>
+
+                <h3>Upload Tea Sample</h3>
+
+                <p>
+                    Supported formats: JPG, JPEG, PNG · Maximum recommended resolution: 1920px
+                </p>
+
+                <label for="galleryInput" class="upload-button">
+                    SELECT IMAGE
+                </label>
+
+                <input
+                    type="file"
+                    id="galleryInput"
+                    name="image"
+                    accept="image/png,image/jpeg"
+                    required
+                    onchange="showFileName(this)"
+                >
+
+                <div id="fileName">No image selected</div>
+
+            </div>
+
+            <div style="text-align:center; margin-top:-10px; margin-bottom:25px;">
+                <button type="submit" class="upload-button" style="border:none;">
+                    RUN ANALYSIS
+                </button>
+            </div>
+        </form>
+
+
+        <!-- KPI CARDS -->
+
+        <div class="kpi-grid">
+
+            <div class="kpi-card">
+                <div class="kpi-label">Tea Classification</div>
+                <div class="kpi-value cyan">
+                    {{ result.tea.reference if result else '--' }}
+                </div>
+                <div class="kpi-meta">Colorimetric reference match</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Tea Concentration</div>
+                <div class="kpi-value purple">
+                    {{ result.tea.milk_ml if result else '--' }} ml
+                </div>
+                <div class="kpi-meta">Estimated dilution indicator</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Color Confidence</div>
+                <div class="kpi-value green">
+                    {{ result.tea.confidence if result else '--' }}%
+                </div>
+                <div class="kpi-meta">Classification confidence score</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Bubble Density</div>
+                <div class="kpi-value orange">
+                    {{ result.bubble_count if result else '--' }}
+                </div>
+                <div class="kpi-meta">Detected surface bubbles</div>
+            </div>
+
+        </div>
+
+        
+{% if result and result.verdict %}
+<div class="verdict-card {{ result.verdict.class }}">
+    <div class="verdict-label">BREWLYTICS FINAL JUDGEMENT</div>
+
+    <h2>{{ result.verdict.title }}</h2>
+
+    <p>{{ result.verdict.message }}</p>
+
+    <div class="verdict-stats">
+        <span>Tea Quality: {{ result.tea.confidence }}%</span>
+        <span>Froth: {{ result.froth_rating }}</span>
+        <span>Bubbles: {{ result.bubble_count }}</span>
+    </div>
+</div>
+{% endif %}
+<br>
+
+
+        <!-- ANALYTICS PANELS -->
+
+        <div class="analysis-grid">
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Color Distribution Analysis</div>
+                    <div class="panel-tag">RGB histogram</div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="colorChart"></canvas>
+                </div>
+            </section>
+
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Surface Bubble Composition</div>
+                    <div class="panel-tag">Object detection</div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="bubbleChart"></canvas>
+                </div>
+            </section>
+
+        </div>
+
+
+        <!-- COLORIMETRIC ANALYSIS -->
+
+        <div class="analysis-grid">
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Colorimetric Characterization</div>
+                    <div class="panel-tag">Spectral estimation</div>
+                </div>
+
+                <div class="color-analysis">
+
+                    <div class="color-wheel">
+                        <div class="color-center">
+                            <strong>
+                                {{ result.tea.confidence if result else '--' }}%
+                            </strong>
+                            <span>match</span>
+                        </div>
+                    </div>
+
+                    <div>
+
+                        <div class="metric-row">
+                            <div class="metric-top">
+                                <span>Tea concentration</span>
+                                <span>
+                                    {{ result.tea.milk_ml if result else 0 }}%
+                                </span>
+                            </div>
+
+                            <div class="bar">
+                                <div
+                                    class="bar-fill bar-orange"
+                                    style="width: {{ result.tea.milk_ml if result else 0 }}%;"
+                                ></div>
+                            </div>
+                        </div>
+
+
+                        <div class="metric-row">
+                            <div class="metric-top">
+                                <span>Color confidence</span>
+                                <span>
+                                    {{ result.tea.confidence if result else 0 }}%
+                                </span>
+                            </div>
+
+                            <div class="bar">
+                                <div
+                                    class="bar-fill bar-cyan"
+                                    style="width: {{ result.tea.confidence if result else 0 }}%;"
+                                ></div>
+                            </div>
+                        </div>
+
+
+                        <div class="metric-row">
+                            <div class="metric-top">
+                                <span>Visual intensity</span>
+                                <span>
+                                    {{ result.tea.confidence if result else 0 }}%
+                                </span>
+                            </div>
+
+                            <div class="bar">
+                                <div
+                                    class="bar-fill bar-purple"
+                                    style="width: {{ result.tea.confidence if result else 0 }}%;"
+                                ></div>
+                            </div>
+                        </div>
+
+
+                        <div class="metric-row">
+                            <div class="metric-top">
+                                <span>Surface activity</span>
+                                <span>
+                                    {{ result.bubble_count if result else 0 }}
+                                </span>
+                            </div>
+
+                            <div class="bar">
+                                <div
+                                    class="bar-fill bar-green"
+                                    style="width: {{ result.bubble_count if result else 0 }}%;"
+                                ></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Froth Quality Assessment</div>
+                    <div class="panel-tag">Surface analysis</div>
+                </div>
+
+                <div class="bubble-stat">
+                    <div class="bubble-number">
+                        {{ result.bubble_count if result else '--' }}
+                    </div>
+
+                    <div class="bubble-caption">
+                        Detected bubbles across visible tea surface
+                    </div>
+
+                    <div class="rating-pill">
+                        {{ result.froth_rating if result else 'AWAITING SAMPLE' }}
+                    </div>
+                </div>
+
+                <div class="chart-box" style="height:150px;">
+                    <canvas id="frothChart"></canvas>
+                </div>
+            </section>
+
+        </div>
+
+
+        <!-- PROCESSED IMAGE -->
+<section class="panel image-panel">
+
+    <div class="panel-header">
+        <div class="panel-title">Processed Sample Image</div>
+        <div class="panel-tag">Computer vision output</div>
+    </div>
+
+    {% if image_url %}
+        <img
+            src="{{ image_url }}"
+            class="processed-image"
+            alt="Processed tea sample"
+        >
+    {% else %}
+        <div class="image-placeholder">
+            Processed image will appear here after analysis
+        </div>
+    {% endif %}
+
+</section>
+
+        <!-- DOMINANT COLORS TABLE -->
+
+        <section class="panel table-panel">
+
+            <div class="panel-header">
+                <div class="panel-title">Dominant Pixel Colors</div>
+                <div class="panel-tag">Top recurring RGB values</div>
+            </div>
+
+            <table class="color-table">
+
+                <thead>
+                    <tr>
+                        <th>Color</th>
+                        <th>RGB Value</th>
+                        <th>Pixel Share</th>
+                        <th>Visual Role</th>
+                    </tr>
+                </thead>
+
+<tbody>
+
+    {% if result and result.tea.dominant_colors %}
+
+        {% for color in result.tea.dominant_colors %}
+
+        <tr>
+            <td>
+                <span
+                    class="swatch"
+                    style="
+                        background: rgb(
+                            {{ color.rgb[0] }},
+                            {{ color.rgb[1] }},
+                            {{ color.rgb[2] }}
+                        );
+                    "
+                ></span>
+
+                RGB Sample {{ loop.index }}
+            </td>
+
+            <td>
+                (
+                {{ color.rgb[0] }},
+                {{ color.rgb[1] }},
+                {{ color.rgb[2] }}
+                )
+            </td>
+
+            <td>
+                {{ "%.2f"|format(color.percentage) }}%
+            </td>
+
+            <td>
+                Dominant tea surface pigment
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <tr>
+            <td colspan="4" style="text-align:center;">
+                No color data available. Upload an image to begin analysis.
+            </td>
+        </tr>
+
+    {% endif %}
+
+</tbody>
+            </table>
+
+        </section>
+
+        <div class="footer">
+            Brewlytics Visual Intelligence Platform · Experimental tea analytics
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+/* ============================================================
+   FILE NAME
+============================================================ */
+
+function showFileName(input) {
+    const fileName = document.getElementById("fileName");
+
+    if (input.files.length > 0) {
+        fileName.textContent = input.files[0].name;
+    } else {
+        fileName.textContent = "No image selected";
+    }
+}
+
+
+/* ============================================================
+   CHART DEFAULTS
+============================================================ */
+
+Chart.defaults.color = "#738097";
+Chart.defaults.borderColor = "#222d3d";
+Chart.defaults.font.family = "Segoe UI, Arial, sans-serif";
+Chart.defaults.font.size = 10;
+
+
+/* ============================================================
+   BACKEND DATA
+============================================================ */
+
+const hasResult = {{ "true" if result else "false" }};
+
+const dominantColors = [
+    {% if result and result.tea.dominant_colors %}
+        {% for color in result.tea.dominant_colors %}
+        {
+            rgb: [
+                {{ color.rgb[0] }},
+                {{ color.rgb[1] }},
+                {{ color.rgb[2] }}
+            ],
+            percentage: {{ color.percentage }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    {% endif %}
+];
+
+const bubbleCount = Number(
+    "{{ result.bubble_count if result else 0 }}"
+);
+
+const confidence = Number(
+    "{{ result.tea.confidence if result else 0 }}"
+);
+
+const milkMl = Number(
+    "{{ result.tea.milk_ml if result else 0 }}"
+);
+
+
+/* ============================================================
+   COLOR DISTRIBUTION BAR CHART
+============================================================ */
+
+const colorLabels = dominantColors.length
+    ? dominantColors.map((color, index) => `RGB ${index + 1}`)
+    : ["RGB 1", "RGB 2", "RGB 3", "RGB 4", "RGB 5"];
+
+const colorValues = dominantColors.length
+    ? dominantColors.map(color => color.percentage)
+    : [0, 0, 0, 0, 0];
+
+const colorCanvas = document.getElementById("colorChart");
+
+if (colorCanvas) {
+    new Chart(colorCanvas, {
+        type: "bar",
+
+        data: {
+            labels: colorLabels,
+
+            datasets: [{
+                label: "Pixel Share (%)",
+                data: colorValues,
+
+                backgroundColor: [
+                    "#00e5ff",
+                    "#a855f7",
+                    "#00ff9d",
+                    "#ffad5c",
+                    "#ff4ecd",
+                    "#4cc9f0",
+                    "#f72585",
+                    "#72efdd",
+                    "#ffd166",
+                    "#06d6a0"
+                ],
+
+                borderRadius: 5,
+                borderSkipped: false
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y.toFixed(2) + "% pixel share";
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: "#738097"
+                    }
+                },
+
+                y: {
+                    beginAtZero: true,
+
+                    ticks: {
+                        callback: function(value) {
+                            return value + "%";
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+/* ============================================================
+   BUBBLE COMPOSITION DOUGHNUT CHART
+============================================================ */
+
+const bubbleCanvas = document.getElementById("bubbleChart");
+
+if (bubbleCanvas) {
+
+    const normalizedBubbleCount = Math.min(
+        Math.max(bubbleCount, 0),
+        100
+    );
+
+    new Chart(bubbleCanvas, {
+        type: "doughnut",
+
+        data: {
+            labels: [
+                "Detected Bubbles",
+                "Remaining Surface"
+            ],
+
+            datasets: [{
+                data: [
+                    normalizedBubbleCount,
+                    100 - normalizedBubbleCount
+                ],
+
+                backgroundColor: [
+                    "#b56cff",
+                    "#222b3b"
+                ],
+
+                borderWidth: 0,
+                hoverOffset: 6
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            cutout: "72%",
+
+            plugins: {
+                legend: {
+                    position: "bottom",
+
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: "circle"
+                    }
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ": " +
+                                context.parsed.toFixed(1) + "%";
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+/* ============================================================
+   FROTH QUALITY CHART
+============================================================ */
+
+const frothCanvas = document.getElementById("frothChart");
+
+if (frothCanvas) {
+
+    /*
+       Bubble count is converted into a normalized froth score.
+       This is a visual analytics indicator, not a scientific measurement.
+    */
+
+    const frothScore = Math.min(
+        Math.max((bubbleCount / 60) * 100, 0),
+        100
+    );
+
+    new Chart(frothCanvas, {
+        type: "line",
+
+        data: {
+            labels: [
+                "Low",
+                "Moderate",
+                "Good",
+                "Very Frothy"
+            ],
+
+            datasets: [{
+                label: "Froth Intensity",
+
+                data: [
+                    20,
+                    45,
+                    70,
+                    95
+                ],
+
+                borderColor: "#00ff9d",
+                backgroundColor: "rgba(0,255,157,0.08)",
+
+                fill: true,
+                tension: 0.4,
+
+                pointBackgroundColor: "#00ff9d",
+                pointBorderColor: "#00ff9d",
+                pointRadius: 3
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+
+                y: {
+                    display: false,
+                    min: 0,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>
