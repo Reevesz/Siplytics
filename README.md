@@ -144,7 +144,7 @@ Upload an image of your tea and let Siplytics judge your beverage choices.
 
 ### Landing Page
 
-![Screenshot1](ref-img/s1.jpeg)
+![Screenshot1](ref-img/landing.jpeg)
 
 ### Photo to be uploaded
 
@@ -160,36 +160,26 @@ Upload an image of your tea and let Siplytics judge your beverage choices.
 
 ![Screenshot1](ref-img/s3.jpeg)
 ![Screenshot1](ref-img/s4.jpeg)
-![Screenshot1](ref-img/s4.jpeg)
-![Screenshot1](ref-img/s6.jpeg)
+![Screenshot1](ref-img/s5.jpeg)
 
 *The analysis dashboard displaying tea color metrics, concentration scores, and pointless graphical insights.*
 
 ### Final Tea Verdict
 
-![Screenshot3](ss/final-verdict.png)
+![Screenshot1](ref-img/s6.jpeg)
 
 *The final tea evaluation featuring the overall score, tea personality, and unnecessarily harsh verdict.*
 
 ---
-
-## Diagrams
-
 ### Workflow
 
-![Workflow](screenshots/workflow.png)
+![Screenshot1](ref-img/Untitled.jpg)
 
 *Siplytics workflow: Image Upload → Image Processing → Computer Vision Analysis → Metric Calculation → Chart Generation → Completely Unnecessary Tea Verdict.*
 
+
+
 ---
-
-# Project Demo
-
-## Video
-
-[Add your demo video link here]
-
-*The demo showcases the complete Siplytics workflow, from uploading a tea image to receiving a scientifically questionable tea analysis report.*
 
 ## Additional Demos
 
