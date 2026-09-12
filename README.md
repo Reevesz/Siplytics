@@ -51,6 +51,9 @@ All analysis is performed with advanced technology for absolutely no practical r
 
 ---
 
+<video src="./preview.mp4" controls width="700"></video>
+
+
 # Technical Details
 
 ## Technologies/Components Used
