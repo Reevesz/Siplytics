@@ -2,7 +2,7 @@
 
 ### The Team Behind the App
 
-### Team Name: The Unnecessary Innovators
+### Team Name: Kannur Squad
 
 ### Team Members
 
