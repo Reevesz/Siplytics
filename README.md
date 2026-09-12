@@ -177,7 +177,9 @@ Upload an image of your tea and let Siplytics judge your beverage choices.
 
 *Siplytics workflow: Image Upload → Image Processing → Computer Vision Analysis → Metric Calculation → Chart Generation → Completely Unnecessary Tea Verdict.*
 
+## Noise Map View
 
+![Screenshot1](ref-img/noise.png)
 
 ---
 
