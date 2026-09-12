@@ -148,17 +148,20 @@ Upload an image of your tea and let Siplytics judge your beverage choices.
 
 ### Photo to be uploaded
 
-![Screenshot1](ss/example.png)
+![Screenshot1](ref-img/example.jpg)
 
 
 ### How to
 
-![Screenshot1](ss/example.png)
-
+![Screenshot1](ref-img/s1.jpeg)
+![Screenshot1](ref-img/s2.jpeg)
 
 ### Tea Analysis Dashboard
 
-![Screenshot2](ss/analysis-dashboard.png)
+![Screenshot1](ref-img/s3.jpeg)
+![Screenshot1](ref-img/s4.jpeg)
+![Screenshot1](ref-img/s4.jpeg)
+![Screenshot1](ref-img/s6.jpeg)
 
 *The analysis dashboard displaying tea color metrics, concentration scores, and pointless graphical insights.*
 
