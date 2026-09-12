@@ -181,6 +181,10 @@ Upload an image of your tea and let Siplytics judge your beverage choices.
 
 ![Screenshot1](ref-img/noise.png)
 
+## Concentration Scake
+
+![Screenshot1](ref-img/scale.png)
+
 ---
 
 ## Additional Demos
